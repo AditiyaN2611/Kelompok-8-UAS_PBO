@@ -9,9 +9,11 @@ import Service.NasabahService;
 import Enum.JenisKelamin;
 import Model.Nasabah;
 import Service.PolisService;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+@SuppressWarnings("unchecked")
 public class FormKelolaNasabah extends javax.swing.JFrame {
 
     /**
@@ -20,9 +22,9 @@ public class FormKelolaNasabah extends javax.swing.JFrame {
     private PolisService polisService;
     private NasabahService nasabahService;
     private DefaultTableModel tableModel;
-    public FormKelolaNasabah(NasabahService nasabahService) {
-        this.nasabahService = nasabahService;
-        this.polisService = polisService;
+    public FormKelolaNasabah(NasabahService nasabahService, PolisService polisService) {
+    this.nasabahService = nasabahService;
+    this.polisService = polisService;  
         initComponents();
         setLocationRelativeTo(null);
         setVisible(true);
@@ -569,27 +571,54 @@ public class FormKelolaNasabah extends javax.swing.JFrame {
     private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
         String keyword = txtCari.getText().trim();
 
-        if (keyword.isEmpty()) {
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(
+            this,
+            "Masukkan ID atau Nama yang ingin dicari",
+            "Peringatan",
+            JOptionPane.WARNING_MESSAGE
+        );
+        return;
+    }
+
+    tableModel.setRowCount(0);
+
+    // ===== COBA CARI BERDASARKAN ID DULU =====
+    Nasabah nasabahById = nasabahService.cariById(keyword);
+    
+    if (nasabahById != null) {
+        // Jika ketemu by ID, tampilkan
+        tableModel.addRow(new Object[]{
+            nasabahById.getIdNasabah(),
+            nasabahById.getNama(),
+            nasabahById.getJenisKelamin(),
+            nasabahById.getNomorHp(),
+            nasabahById.getAlamat(),
+            nasabahById.getUmur()
+        });
+    } else {
+        // Jika tidak ketemu by ID, cari berdasarkan nama
+        ArrayList<Nasabah> hasilNama = nasabahService.cariByNama(keyword);
+        
+        if (hasilNama.isEmpty()) {
             JOptionPane.showMessageDialog(
                 this,
-                "Masukkan nama yang ingin dicari",
-                "Peringatan",
-                JOptionPane.WARNING_MESSAGE
+                "Data nasabah tidak ditemukan",
+                "Informasi",
+                JOptionPane.INFORMATION_MESSAGE
             );
-            return;
+        } else {
+            for (Nasabah n : hasilNama) {
+                tableModel.addRow(new Object[]{
+                    n.getIdNasabah(),
+                    n.getNama(),
+                    n.getJenisKelamin(),
+                    n.getNomorHp(),
+                    n.getAlamat(),
+                    n.getUmur()
+                });
+            }
         }
-
-        tableModel.setRowCount(0);
-
-        for (Nasabah n : nasabahService.cariByNama(keyword)) {
-            tableModel.addRow(new Object[]{
-                n.getIdNasabah(),
-                n.getNama(),
-                n.getJenisKelamin(),
-                n.getNomorHp(),
-                n.getAlamat(),
-                n.getUmur()
-            });
         }
     }//GEN-LAST:event_btnCariActionPerformed
 
@@ -623,9 +652,10 @@ public class FormKelolaNasabah extends javax.swing.JFrame {
         /* Create and display the form */
         
         NasabahService nasabahService = new NasabahService();
+        PolisService polisService = new PolisService(nasabahService);
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FormKelolaNasabah(nasabahService).setVisible(true);
+                new FormKelolaNasabah(nasabahService, polisService).setVisible(true);
             }
         });
     }

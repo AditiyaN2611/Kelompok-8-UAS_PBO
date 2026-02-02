@@ -103,7 +103,7 @@ public class PolisService implements FileHandler {
                 continue;
             }
 
-            String[] d = line.split(";");
+            String[] d = line.split("\\|");
 
             // Validasi jumlah kolom
             if (d.length < 10) {

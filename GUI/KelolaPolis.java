@@ -13,6 +13,7 @@ import Enum.StatusAsuransi;
 import Service.NasabahService;
 import Service.PolisService;
 import Asuransi.AsuransiJiwa;
+import java.util.ArrayList;
 import Asuransi.AsuransiKesehatan;
 import Model.Polis;
 
@@ -65,9 +66,26 @@ public class KelolaPolis extends javax.swing.JFrame {
     }
     private void loadPolis() {
     tableModel.setRowCount(0);
+    
+    // ===== TAMBAHKAN NULL CHECK INI =====
+    if (polisService == null) {
+        System.err.println("ERROR: polisService is NULL!");
+        return;
+    }
+    
+    ArrayList<Polis> dataPolisTemp = polisService.getAllPolis();
+    
+    if (dataPolisTemp == null) {
+        System.err.println("ERROR: getAllPolis() returned NULL!");
+        return;
+    }
 
-    for (Polis p : polisService.getAllPolis()) {
-
+    for (Polis p : dataPolisTemp) {
+        
+        // Skip jika polis null
+        if (p == null) {
+            continue;
+        }
        
         if (p.getNasabah() == null || p.getAsuransi() == null) {
             continue;
@@ -95,8 +113,7 @@ public class KelolaPolis extends javax.swing.JFrame {
             p.getTanggalAkhir()
         });
     }
-
-    }
+}
     private void resetForm() {
     txtIdPolis.setText("");
     txtNama.setText("");

@@ -191,7 +191,7 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void btnKelolaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKelolaActionPerformed
         // TODO add your handling code here:
-        new FormKelolaNasabah(nasabahService);
+        new FormKelolaNasabah(nasabahService, polisService);
         dispose();
     }//GEN-LAST:event_btnKelolaActionPerformed
 
